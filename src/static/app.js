@@ -3,6 +3,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
+  const serveTip = document.getElementById("serve-tip");
+
+  // If the page is opened via file://, show a helpful hint and stop early
+  if (location.protocol === "file:") {
+    activitiesList.innerHTML = `<p class="error">This page must be served over HTTP. See the tip below to start a simple local server.</p>`;
+    if (serveTip) serveTip.classList.remove("hidden");
+    return;
+  }
 
   // Function to fetch activities from API
   async function fetchActivities() {
@@ -62,7 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
         activitySelect.appendChild(option);
       });
     } catch (error) {
-      activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
+      // Helpful messages for common problems
+      activitiesList.innerHTML =
+        `<p class="error">Failed to load activities. Check that the backend is running and accessible at <code>/activities</code>.</p>
+         <p class="info">Quick test: <code>curl -v http://localhost:5000/activities</code> (adjust port if needed)</p>`;
       console.error("Error fetching activities:", error);
     }
   }
